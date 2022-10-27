@@ -34,12 +34,13 @@ class Agent(objec):
 		agent.mass = mass
 		agent.dire,agent.vdire,agent.adire = [0]*3#dire: direction in radiants.
 		agent.fthru = 0#thrust force
+		agent.thrum = 9#thrusting multiplier: reflects the thrusting power of the agent
 	def draw(agent):
 		super().draw()
 		dralin(*agent.posit, agent.x + cos(agent.dire)*agent.radiu*2, agent.y + sin(agent.dire)*agent.radiu*2, colo2)#draws the directipn line
 	def updat(agent, dtime):
-		# agent.ax = agent.fthru * cos(agent.dire) / agent.mass
-		# agent.ay = agent.fthru * cos(agent.dire) / agent.mass
+		agent.ax = agent.fthru * cos(agent.dire) / agent.mass
+		agent.ay = agent.fthru * sin(agent.dire) / agent.mass
 		super().updat(dtime)
 		agent.dire += dtime * (agent.vdire + dtime*agent.adire/2)
 		agent.dire %= pi*2
@@ -69,11 +70,13 @@ class Game(windo):
 	def on_key_press(game,ke,modif):
 		match ke:
 			case key.ENTER: game.close()
-			case key.RIGHT: game.agent0.adire=1
-			case key.LEFT: game.agent0.adire=-1
+			case key.RIGHT: game.agent0.adire =-1#clockwise
+			case key.LEFT: game.agent0.adire =1#anticlockwise
+			case key.UP: game.agent0.fthru = game.agent0.thrum	#thrust to the direction
 	def on_key_release(game,ke,modif):
 		match ke:
-			case key.RIGHT|key.LEFT: game.agent0.adire=0
+			case key.RIGHT|key.LEFT: game.agent0.adire =0
+			case key.UP: game.agent0.fthru =0
 
 if __name__=="__main__":
 	game= Game(width,heigh,title)
