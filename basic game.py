@@ -1,7 +1,7 @@
 from arcade import open_window as opewin, set_background_color as sebaco, draw_circle_filled as drcifi, Window as windo, schedule as sched, start_render as staren, run as run, draw_line as dralin, key as key
 from random import randrange as ranran
 import arcade as arcad
-from math import sin,cos, PI as pi
+from math import sin,cos,pi
 
 colos= [255,255,255*1], [255,0*1,255], [0]*3
 for a in range(len(colos)): exec(f"colo{a}=colos[a]")
@@ -33,10 +33,13 @@ class Agent(objec):
 		super().__init__(**paras)
 		agent.mass = mass
 		agent.dire,agent.vdire,agent.adire = [0]*3#dire: direction in radiants.
+		agent.fthru = 0#thrust force
 	def draw(agent):
 		super().draw()
 		dralin(*agent.posit, agent.x + cos(agent.dire)*agent.radiu*2, agent.y + sin(agent.dire)*agent.radiu*2, colo2)#draws the directipn line
 	def updat(agent, dtime):
+		# agent.ax = agent.fthru * cos(agent.dire) / agent.mass
+		# agent.ay = agent.fthru * cos(agent.dire) / agent.mass
 		super().updat(dtime)
 		agent.dire += dtime * (agent.vdire + dtime*agent.adire/2)
 		agent.dire %= pi*2
