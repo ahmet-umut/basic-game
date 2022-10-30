@@ -68,15 +68,17 @@ class Game(windo):
 	def on_update(game,dtime):#delta time
 		for a in game.agents: a.updat(dtime)
 	def on_key_press(game,ke,modif):
+		agent= game.agent0
 		match ke:
 			case key.ENTER: game.close()
-			case key.RIGHT: game.agent0.adire =-1#clockwise
-			case key.LEFT: game.agent0.adire =1#anticlockwise
-			case key.UP: game.agent0.fthru = game.agent0.thrum	#thrust to the direction
+			case key.RIGHT: agent.adire =-1#clockwise
+			case key.LEFT: agent.adire =1#anticlockwise
+			case key.UP: agent.fthru = agent.thrum	#thrust to the direction
 	def on_key_release(game,ke,modif):
+		agent= game.agent0
 		match ke:
-			case key.RIGHT|key.LEFT: game.agent0.adire =0
-			case key.UP: game.agent0.fthru =0
+			case key.RIGHT|key.LEFT: agent.adire =0
+			case key.UP: agent.fthru =0
 
 if __name__=="__main__":
 	game= Game(width,heigh,title)
