@@ -3,7 +3,7 @@ from random import randrange as ranran
 import arcade as arcad
 from math import sin,cos,pi
 
-colos= [255,255,255*1], [255,0*1,255], [0]*3
+colos= [255,255,255*1], [255,0*1,255], [0]*3, [0]*3
 for a in range(len(colos)): exec(f"colo{a}=colos[a]")
 
 width=999
@@ -27,10 +27,23 @@ class objec:
 		obje.vy += dtime * obje.ay
 	def updatposit(obje): obje.posit = obje.x,obje.y
 
+class Ball(objec):
+	"""docstring for Ball"""
+	def __init__(ball,agent, radiu=4, colo=colo3, veloc=0):
+		super().__init__(agent.x,agent.y, radiu,colo)
+		ball.vx = cos(agent.dire)*veloc
+		ball.vy = sin(agent.dire)*veloc
+	def updat(ball):
+		super().updat(dtime)
+		ball.x %= width
+		ball.y %= heighb
+
+
 class Agent(objec):
 	"""docstring for Agent"""
-	def __init__(agent, mass=1, **paras):
+	def __init__(agent,game, mass=1, **paras):
 		super().__init__(**paras)
+		agent.game =game
 		agent.mass = mass
 		agent.dire,agent.vdire,agent.adire = [0]*3#dire: direction in radiants.
 		agent.fthru = 0#thrust force
@@ -45,6 +58,8 @@ class Agent(objec):
 		agent.dire += dtime * (agent.vdire + dtime*agent.adire/2)
 		agent.dire %= pi*2
 		agent.vdire += dtime * agent.adire
+	def fire(agent):
+		agent.game.balls.append(Ball(agent, veloc=99))
 
 
 class Game(windo):
@@ -52,6 +67,7 @@ class Game(windo):
 		super().__init__(*paras)
 		game.fpsco=0#FPS counter
 		game.agents = []
+		game.balls = []
 	def setup(game):
 		sebaco(colo0)
 
@@ -61,12 +77,14 @@ class Game(windo):
 		game.agent0.vx = 6
 		
 	def aagent(game,**paras):#add agent
-		game.agents.append(Agent(**paras))
+		game.agents.append(Agent(game,**paras))
 	def on_draw(game):
 		staren()
+		for b in game.balls: b.draw()
 		for a in game.agents: a.draw()
 	def on_update(game,dtime):#delta time
 		for a in game.agents: a.updat(dtime)
+		for b in game.balls: b.updat(dtime)
 	def on_key_press(game,ke,modif):
 		agent= game.agent0
 		match ke:
@@ -74,6 +92,7 @@ class Game(windo):
 			case key.RIGHT: agent.adire =-1#clockwise
 			case key.LEFT: agent.adire =1#anticlockwise
 			case key.UP: agent.fthru = agent.thrum	#thrust to the direction
+			case key.SPACE: agent.fire()
 	def on_key_release(game,ke,modif):
 		agent= game.agent0
 		match ke:
