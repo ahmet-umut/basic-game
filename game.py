@@ -1,12 +1,14 @@
 from arcade import open_window as opewin, set_background_color as sebaco, draw_circle_filled as drcifi, Window as windo, schedule as sched, start_render as staren, run as run, draw_line as dralin, key as key
-from random import randrange as ranran
+from random import randrange as ranran, random as rando
 import arcade as arcad
 from math import sin,cos,pi
 
-colos= [255,255,255*1], [0]*3, [0]*3, [0]*3, [111]*3
+colos= [255,255,255*1], [0]*3, [0]*3, [0]*3, [111]*3, [111]*3
 agentcolos= [255,0*1,255], [222]*3                                                              
 for a in range(len(colos)): exec(f"colo{a}=colos[a]")
 for a in range(len(agentcolos)): exec(f"agentcolo{a}=agentcolos[a]")
+def blcolos(colo1,colo2):#blend colors
+	return [(col1+col2)//2 for col1,col2 in zip(colo1,colo2)]
 
 width=999
 heigh=333
@@ -40,9 +42,7 @@ class Ball(objec):
 		ball.tbdeletd =False#to be deleted
 	def updat(ball,dtime):
 		super().updat(dtime)
-		ball.x %= width
-		ball.y %= heigh
-		if ball.tbdeletd:
+		if ball.tbdeletd or ball.x %width != ball.x or  ball.y %heigh != ball.y:
 			ball.agent.game.balls.remove(ball)
 			del(ball)
 	def delet(ball): ball.tbdeletd =True#delete
@@ -51,15 +51,16 @@ class Ball(objec):
 class Agent(objec):
 	"""docstring for Agent"""
 	agentct=0#agent count
-	def __init__(agent,game, mass=9, **paras):
+	def __init__(agent,game, mass=9,dire=0, **paras):
 		super().__init__(**paras)
 		agent.colo = agentcolos[Agent.agentct]
 		Agent.agentct += 1
 		agent.damag =0
 		agent.score =0
 		agent.game =game
-		agent.mass = mass
-		agent.dire,agent.vdire,agent.adire = [0]*3#dire: direction in radiants.
+		agent.mass =mass
+		agent.dire =dire
+		agent.vdire,agent.adire = [0]*2#dire: direction in radiants.
 		agent.fthru = 0#thrust force
 		agent.thrum = 99#thrusting multiplier: reflects the thrusting power of the agent
 	def draw(agent):
@@ -75,9 +76,9 @@ class Agent(objec):
 		agent.x %= width
 		agent.y %= heigh
 	def fire(agent):
-		agent.game.balls.append(Ball(agent, veloc=99))
+		agent.game.balls.append(Ball(agent, veloc=99, colo= blcolos(agent.colo,colo5)))
 
-
+# MİGHT ADD FRİCTİON
 
 class Game(windo):
 	def __init__(game,*paras):
@@ -89,9 +90,10 @@ class Game(windo):
 		# sched(game.comfps,4)		#for computing FPS every 4 sec.s
 		sebaco(colo0)
 
-		game.aagent(x=111,y=111)
-		game.aagent(x=222,y=222)
+		game.aagent(x=ranran(111,888),y=ranran(111,222), dire=rando()*2*pi)
+		game.aagent(x=ranran(111,888),y=ranran(111,222), dire=rando()*2*pi)
 		for a in range(len(game.agents)): exec(f"game.agent{a}=game.agents[a]")
+
 		
 	def aagent(game,**paras):#add agent
 		game.agents.append(Agent(game,**paras))
